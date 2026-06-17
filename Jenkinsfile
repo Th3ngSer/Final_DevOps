@@ -8,6 +8,7 @@ pipeline {
 
     environment {
         SRE_EMAIL = 'srengty@gmail.com'
+        DEPLOY_BRANCH = 'Ex1_Final_DevOps'
     }
 
     stages {
@@ -38,8 +39,14 @@ pipeline {
 
         stage('Deploy via Ansible') {
             steps {
-                // Execute the Ansible playbook using the local system's ansible-playbook
-                sh 'ansible-playbook -i inventory.ini deploy.yml -e app_branch="${BRANCH_NAME}"'
+                sh '''
+                    if ! command -v ansible-playbook >/dev/null 2>&1; then
+                        echo "ansible-playbook is not installed in this Jenkins environment" >&2
+                        exit 127
+                    fi
+
+                    ansible-playbook -i inventory.ini deploy.yml -e app_branch="$DEPLOY_BRANCH"
+                '''
             }
         }
     }
