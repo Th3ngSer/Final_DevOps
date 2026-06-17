@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ID Card System Generator</title>
     <style>
+        :root {
+            --bg: #070912;
+            --panel: rgba(18, 24, 42, 0.78);
+            --panel-strong: #111827;
+            --line: rgba(148, 163, 184, 0.22);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --accent: #6d8cff;
+            --accent-strong: #24327c;
+            --gold: #f7b84b;
+            --danger: #ef4444;
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -12,74 +25,171 @@
         body {
             margin: 0;
             min-height: 100vh;
-            background: #0f0f10;
-            color: #f8fafc;
-            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at 18% 12%, rgba(109, 140, 255, 0.26), transparent 34%),
+                radial-gradient(circle at 82% 16%, rgba(20, 184, 166, 0.16), transparent 28%),
+                linear-gradient(135deg, #05060b 0%, var(--bg) 46%, #0f172a 100%);
+            color: var(--text);
+            font-family: Inter, Arial, sans-serif;
+        }
+
+        a {
+            color: inherit;
         }
 
         .page {
-            max-width: 1180px;
+            max-width: 1240px;
             margin: 0 auto;
-            padding: 28px 20px 56px;
+            padding: 34px 22px 64px;
+        }
+
+        .topbar {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 34px;
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
         h1 {
-            color: #d7dee9;
-            font-size: 24px;
-            font-weight: 500;
-            margin: 0 0 36px;
+            font-size: clamp(28px, 4vw, 46px);
+            line-height: 1;
+            margin: 0;
         }
 
-        .hero {
+        .subtitle {
+            color: var(--muted);
+            line-height: 1.6;
+            margin: 12px 0 0;
+            max-width: 600px;
+        }
+
+        .status-pill {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.34);
+            border-radius: 999px;
+            color: #bbf7d0;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 10px 16px;
+            white-space: nowrap;
+        }
+
+        .studio {
             display: grid;
-            gap: 28px;
-            justify-items: center;
-            margin-bottom: 36px;
+            gap: 24px;
+            grid-template-columns: minmax(420px, 1.05fr) minmax(340px, 0.95fr);
+            margin-bottom: 34px;
+        }
+
+        .glass {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.38);
+            backdrop-filter: blur(18px);
+        }
+
+        .preview-panel {
+            min-height: 510px;
+            padding: 28px;
+        }
+
+        .panel-title {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .panel-title h2 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .mini-label {
+            color: var(--muted);
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .card-stage {
+            display: grid;
+            place-items: center;
+            min-height: 330px;
+            padding: 14px;
         }
 
         .id-card {
-            background: #2b2d3a;
-            border: 1px solid #85899a;
-            border-radius: 0 18px 18px 0;
-            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+            background:
+                linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 38%),
+                linear-gradient(135deg, #252b42 0%, #1c2134 52%, #121827 100%);
+            border: 1px solid rgba(226, 232, 240, 0.34);
+            border-radius: 22px;
+            box-shadow: 0 26px 80px rgba(0, 0, 0, 0.48);
             display: grid;
-            grid-template-columns: 36px 1fr 132px;
-            height: 230px;
+            grid-template-columns: 48px 1fr 130px;
+            min-height: 238px;
             overflow: hidden;
             position: relative;
-            width: 560px;
+            width: min(100%, 590px);
+        }
+
+        .id-card::after {
+            background: radial-gradient(circle, rgba(109, 140, 255, 0.22), transparent 62%);
+            content: "";
+            height: 220px;
+            position: absolute;
+            right: 34px;
+            top: -70px;
+            width: 220px;
         }
 
         .id-strip {
             align-items: center;
-            background: #a9c9ff;
-            color: #050505;
+            background: linear-gradient(180deg, #b9d5ff, #82aaff);
+            color: #020617;
             display: flex;
-            font-size: 12px;
-            font-weight: 800;
+            font-size: 11px;
+            font-weight: 900;
             justify-content: center;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
             writing-mode: vertical-rl;
             transform: rotate(180deg);
+            z-index: 1;
         }
 
         .id-main {
             align-items: center;
             display: grid;
-            grid-template-columns: 130px 1fr;
-            gap: 24px;
-            padding: 32px 22px;
+            gap: 22px;
+            grid-template-columns: 116px 1fr;
+            padding: 30px 24px;
+            z-index: 1;
         }
 
         .avatar {
             align-items: center;
-            background: #404556;
-            border-radius: 50%;
+            background: linear-gradient(145deg, #4b556c, #2d3448);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 28px;
             display: flex;
-            height: 104px;
+            height: 116px;
             justify-content: center;
             overflow: hidden;
-            width: 104px;
+            position: relative;
+            width: 116px;
         }
 
         .avatar img {
@@ -89,38 +199,57 @@
         }
 
         .avatar-placeholder {
-            color: #9097aa;
-            font-size: 52px;
+            color: #9ca3af;
+            font-size: 48px;
+            font-weight: 900;
         }
 
         .profile-name {
-            font-size: 20px;
-            font-weight: 800;
-            line-height: 1.1;
+            font-size: 23px;
+            font-weight: 900;
+            line-height: 1.05;
             text-transform: uppercase;
         }
 
-        .badge {
-            background: #f6b83f;
-            border-radius: 3px;
-            color: #ffffff;
-            display: inline-block;
-            font-size: 11px;
-            font-weight: 800;
-            margin: 4px 0 10px;
-            padding: 3px 8px;
+        .badge-row {
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 8px 0 12px;
         }
 
-        .dept {
-            color: #d7dbe7;
-            font-size: 14px;
+        .badge {
+            background: linear-gradient(135deg, #ffcc66, #f59e0b);
+            border-radius: 999px;
+            color: #111827;
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 5px 10px;
+        }
+
+        .active-dot {
+            align-items: center;
+            color: #bbf7d0;
+            display: inline-flex;
+            font-size: 11px;
+            font-weight: 800;
+            gap: 6px;
+        }
+
+        .active-dot::before {
+            background: #22c55e;
+            border-radius: 999px;
+            content: "";
+            height: 7px;
+            width: 7px;
         }
 
         .detail-lines {
-            color: #b8c0d0;
-            font-size: 11px;
-            line-height: 1.5;
-            margin-top: 8px;
+            color: #cbd5e1;
+            font-size: 12px;
+            line-height: 1.55;
         }
 
         .detail-lines span {
@@ -128,14 +257,15 @@
         }
 
         .reg {
-            border: 1px solid #555b70;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(226, 232, 240, 0.2);
             border-radius: 10px;
             color: #ffffff;
             display: inline-block;
             font-family: monospace;
             font-size: 12px;
-            margin-top: 28px;
-            padding: 6px 11px;
+            margin-top: 14px;
+            padding: 7px 11px;
         }
 
         .id-codes {
@@ -143,97 +273,124 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 18px 16px 20px 0;
+            padding: 20px 18px 22px 0;
+            z-index: 1;
         }
 
         .qr {
             background: #ffffff;
-            border-radius: 4px;
-            height: 72px;
-            padding: 4px;
-            width: 72px;
-        }
-
-        .barcode {
-            background: #ffffff;
-            max-height: 48px;
-            max-width: 140px;
-            padding: 4px;
+            border-radius: 12px;
+            height: 78px;
+            object-fit: contain;
+            padding: 5px;
+            width: 78px;
         }
 
         .sample-qr {
-            color: #ffffff;
+            align-items: center;
+            background: #ffffff;
+            border-radius: 12px;
+            color: #111827;
+            display: flex;
             font-family: monospace;
-            font-size: 32px;
-            line-height: 0.7;
-            text-align: center;
+            font-size: 30px;
+            font-weight: 900;
+            height: 78px;
+            justify-content: center;
+            line-height: 0.8;
+            width: 78px;
+        }
+
+        .barcode,
+        .sample-barcode {
+            background: #ffffff;
+            border-radius: 8px;
+            max-height: 46px;
+            max-width: 132px;
+            object-fit: contain;
+            padding: 5px;
         }
 
         .sample-barcode {
-            color: #ffffff;
+            color: #111827;
             font-family: monospace;
-            font-size: 30px;
+            font-size: 28px;
             letter-spacing: -6px;
+            overflow: hidden;
         }
 
-        .panel {
-            border-top: 1px solid #303030;
-            margin-top: 18px;
+        .preview-meta {
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(3, 1fr);
+            margin-top: 26px;
             padding-top: 18px;
-            width: 100%;
-        }
-
-        .status {
-            color: #cbd5e1;
             text-align: center;
         }
 
-        .status strong {
-            color: #ffffff;
+        .preview-meta strong {
+            color: var(--text);
             display: block;
-            font-family: monospace;
-            margin-top: 8px;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .form-panel {
+            padding: 28px;
         }
 
         .form {
-            border-top: 1px solid #303030;
             display: grid;
-            gap: 16px 22px;
-            grid-template-columns: repeat(2, minmax(240px, 1fr));
-            margin-top: 22px;
-            padding-top: 20px;
+            gap: 18px;
+        }
+
+        .field-grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: 1fr 1fr;
         }
 
         label {
-            color: #f8fafc;
+            color: #e2e8f0;
             display: block;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 800;
             margin-bottom: 8px;
         }
 
         input,
         select {
-            background: #171717;
-            border: 1px solid transparent;
-            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.78);
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            border-radius: 14px;
             color: #ffffff;
             font-size: 15px;
             outline: none;
-            padding: 12px 14px;
+            padding: 13px 14px;
             width: 100%;
         }
 
         input:focus,
         select:focus {
-            border-color: #9fbfff;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(109, 140, 255, 0.12);
+        }
+
+        input[type="file"] {
+            color: var(--muted);
+            padding: 11px;
         }
 
         .segmented {
-            background: #171717;
-            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.78);
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            border-radius: 16px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             overflow: hidden;
+            padding: 4px;
         }
 
         .segmented label {
@@ -246,59 +403,77 @@
         }
 
         .segmented span {
+            border-radius: 12px;
             display: block;
-            font-size: 13px;
-            font-weight: 800;
-            padding: 13px 14px;
+            font-size: 12px;
+            font-weight: 900;
+            padding: 12px 10px;
             text-align: center;
         }
 
         .segmented input:checked + span {
-            background: #24327c;
-            box-shadow: inset 0 0 0 1px #ffffff;
+            background: linear-gradient(135deg, #3343a3, var(--accent-strong));
+            box-shadow: 0 10px 28px rgba(36, 50, 124, 0.45);
         }
 
-        .submit-row {
-            grid-column: 1 / -1;
-            text-align: right;
-        }
-
-        button {
-            background: #24327c;
-            border: 1px solid #9fbfff;
+        button,
+        .button-link {
+            align-items: center;
+            background: linear-gradient(135deg, #4057d6, var(--accent-strong));
+            border: 1px solid rgba(191, 219, 254, 0.65);
             border-radius: 999px;
             color: #ffffff;
             cursor: pointer;
-            font-weight: 800;
-            padding: 12px 26px;
-        }
-
-        .button-link {
-            align-items: center;
-            background: #16213f;
-            border: 1px solid #9fbfff;
-            border-radius: 999px;
-            color: #ffffff;
             display: inline-flex;
             font-size: 13px;
-            font-weight: 800;
+            font-weight: 900;
             justify-content: center;
-            padding: 11px 18px;
+            min-height: 44px;
+            padding: 12px 22px;
             text-decoration: none;
         }
 
-        button.danger {
-            background: #3a1212;
-            border-color: #ef4444;
+        button:hover,
+        .button-link:hover {
+            filter: brightness(1.12);
+        }
+
+        .danger {
+            background: linear-gradient(135deg, #7f1d1d, #dc2626);
+            border-color: rgba(254, 202, 202, 0.5);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 6px;
         }
 
         .error {
-            background: #3b1111;
-            border: 1px solid #ef4444;
-            border-radius: 12px;
+            background: rgba(127, 29, 29, 0.55);
+            border: 1px solid rgba(248, 113, 113, 0.75);
+            border-radius: 16px;
             color: #fecaca;
             margin-bottom: 18px;
-            padding: 12px;
+            padding: 14px;
+        }
+
+        .section-header {
+            align-items: end;
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            margin: 34px 0 18px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            margin: 6px 0 0;
         }
 
         .cards-grid {
@@ -306,7 +481,6 @@
             gap: 26px;
             grid-template-columns: repeat(auto-fit, minmax(560px, 1fr));
             justify-items: center;
-            margin-top: 28px;
         }
 
         .saved-card {
@@ -321,17 +495,17 @@
             margin-top: 12px;
         }
 
-        details.edit-panel {
-            border: 1px solid #303030;
-            border-radius: 16px;
+        .edit-panel {
+            border: 1px solid var(--line);
+            border-radius: 18px;
             margin-top: 14px;
-            padding: 12px;
+            padding: 14px;
         }
 
-        details.edit-panel summary {
+        .edit-panel summary {
             color: #dbeafe;
             cursor: pointer;
-            font-weight: 800;
+            font-weight: 900;
         }
 
         .edit-form {
@@ -341,136 +515,196 @@
             margin-top: 14px;
         }
 
+        .edit-form .form-actions {
+            grid-column: 1 / -1;
+        }
+
         .empty {
-            border: 1px dashed #414141;
-            border-radius: 16px;
-            color: #94a3b8;
-            margin-top: 26px;
-            padding: 28px;
+            border: 1px dashed var(--line);
+            border-radius: 22px;
+            color: var(--muted);
+            padding: 34px;
             text-align: center;
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 940px) {
+            .studio {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar,
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .field-grid,
+            .edit-form,
+            .preview-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
             .id-card,
             .saved-card {
                 width: 100%;
             }
 
             .id-card {
-                grid-template-columns: 32px 1fr;
-                height: auto;
+                grid-template-columns: 40px 1fr;
+            }
+
+            .id-main {
+                grid-template-columns: 1fr;
             }
 
             .id-codes {
                 grid-column: 1 / -1;
                 flex-direction: row;
-                padding: 0 18px 18px 50px;
-            }
-
-            .id-main,
-            .form {
-                grid-template-columns: 1fr;
+                padding: 0 22px 22px 62px;
             }
         }
     </style>
 </head>
 <body>
 <main class="page">
-    <h1>ID Card System Generator</h1>
+    <header class="topbar">
+        <div>
+            <div class="eyebrow">Modern Identity Studio</div>
+            <h1>ID Card System Generator</h1>
+            <p class="subtitle">Create, edit, preview, scan QR information, and export professional ID cards as PDF.</p>
+        </div>
+        <div class="status-pill">Spring Boot Live</div>
+    </header>
 
-    <section class="hero">
-        <article class="id-card">
-            <div class="id-strip">IDENTITY ACCESS</div>
-            <div class="id-main">
-                <div class="avatar">
-                    <span class="avatar-placeholder">●</span>
-                </div>
-                <div>
-                    <div class="profile-name">John Doe</div>
-                    <span class="badge">STUDENT</span>
-                    <div class="dept">Engineering</div>
-                    <div class="detail-lines">
-                        <span>Email: john@example.com</span>
-                        <span>Status: Active Card</span>
+    <section class="studio">
+        <div class="glass preview-panel">
+            <div class="panel-title">
+                <h2>Live Card Preview</h2>
+                <span class="mini-label">AUTO-UPDATES</span>
+            </div>
+
+            <div class="card-stage">
+                <article class="id-card">
+                    <div class="id-strip">IDENTITY ACCESS</div>
+                    <div class="id-main">
+                        <div class="avatar">
+                            <span class="avatar-placeholder" id="previewInitial">JD</span>
+                        </div>
+                        <div>
+                            <div class="profile-name" id="previewName">John Doe</div>
+                            <div class="badge-row">
+                                <span class="badge" id="previewType">STUDENT</span>
+                                <span class="active-dot">Active</span>
+                            </div>
+                            <div class="detail-lines">
+                                <span id="previewDept">Department: Engineering</span>
+                                <span id="previewEmail">Email: john@example.com</span>
+                                <span>Access Level: Standard</span>
+                            </div>
+                            <span class="reg">08-9479</span>
+                        </div>
                     </div>
-                    <span class="reg">08-9479</span>
-                </div>
+                    <div class="id-codes">
+                        <div class="sample-qr">QR</div>
+                        <div class="sample-barcode">||||||||||||</div>
+                    </div>
+                </article>
             </div>
-            <div class="id-codes">
-                <div class="sample-qr">▟▙<br>▜▛</div>
-                <div class="sample-barcode">||||||||||||</div>
-            </div>
-        </article>
 
-        <div class="panel">
-            <div class="status">
-                Status
-                <strong>Live Preview</strong>
+            <div class="preview-meta">
+                <div>Mode<strong>Designer</strong></div>
+                <div>QR Data<strong>Full Profile</strong></div>
+                <div>Export<strong>PDF Ready</strong></div>
             </div>
         </div>
-    </section>
 
-    <section class="panel">
-        <div class="error" th:if="${error}" th:text="${error}"></div>
-
-        <form class="form" th:action="@{/profiles}" method="post" enctype="multipart/form-data">
-            <div>
-                <label for="fullName">Full Name</label>
-                <input id="fullName" name="fullName" type="text" placeholder="John Doe" required>
+        <div class="glass form-panel">
+            <div class="panel-title">
+                <h2>Create New Card</h2>
+                <span class="mini-label">INPUT DETAILS</span>
             </div>
 
-            <div>
-                <label>Profile Type</label>
-                <div class="segmented">
-                    <label th:each="type, stat : ${profileTypes}">
-                        <input type="radio" name="profileType" th:value="${type}" th:checked="${stat.index == 0}" required>
-                        <span th:text="${type}"></span>
-                    </label>
+            <div class="error" th:if="${error}" th:text="${error}"></div>
+
+            <form class="form" th:action="@{/profiles}" method="post" enctype="multipart/form-data">
+                <div>
+                    <label for="fullName">Full Name</label>
+                    <input id="fullName" name="fullName" type="text" placeholder="John Doe" required>
                 </div>
-            </div>
 
-            <div>
-                <label for="department">Department</label>
-                <input id="department" name="department" type="text" placeholder="Engineering" required>
-            </div>
+                <div>
+                    <label>Profile Type</label>
+                    <div class="segmented">
+                        <label th:each="type, stat : ${profileTypes}">
+                            <input type="radio" name="profileType" th:value="${type}" th:checked="${stat.index == 0}" required>
+                            <span th:text="${type}"></span>
+                        </label>
+                    </div>
+                </div>
 
-            <div>
-                <label for="email">Email</label>
-                <input id="email" name="email" type="email" placeholder="john@example.com" required>
-            </div>
+                <div class="field-grid">
+                    <div>
+                        <label for="department">Department</label>
+                        <input id="department" name="department" type="text" placeholder="Engineering" required>
+                    </div>
 
-            <div>
-                <label for="photo">Photo</label>
-                <input id="photo" name="photoFile" type="file" accept="image/*">
-            </div>
+                    <div>
+                        <label for="email">Email</label>
+                        <input id="email" name="email" type="email" placeholder="john@example.com" required>
+                    </div>
+                </div>
 
-            <div class="submit-row">
-                <button type="submit">Create Profile</button>
-            </div>
-        </form>
+                <div>
+                    <label for="photo">Photo</label>
+                    <input id="photo" name="photoFile" type="file" accept="image/*">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit">Create Profile</button>
+                </div>
+            </form>
+        </div>
     </section>
 
     <section>
-        <div class="empty" th:if="${#lists.isEmpty(profiles)}">
-            No generated cards yet. Create a profile above.
+        <div class="section-header">
+            <div>
+                <div class="eyebrow">Generated Cards</div>
+                <h2>Saved ID Cards</h2>
+                <p>Edit details, download PDF, or scan QR to view card information.</p>
+            </div>
+            <span class="mini-label" th:text="${#lists.size(profiles)} + ' CARDS'">0 CARDS</span>
+        </div>
+
+        <div class="empty glass" th:if="${#lists.isEmpty(profiles)}">
+            No generated cards yet. Create your first profile above.
         </div>
 
         <div class="cards-grid" th:if="${!#lists.isEmpty(profiles)}">
-            <div class="saved-card" th:each="item : ${profiles}">
+            <div class="saved-card glass" th:each="item : ${profiles}">
                 <article class="id-card">
                     <div class="id-strip">IDENTITY ACCESS</div>
                     <div class="id-main">
                         <div class="avatar">
                             <img th:if="${item.photo != null}" th:src="@{/profiles/{id}/photo(id=${item.id})}" alt="Profile photo">
-                            <span th:if="${item.photo == null}" class="avatar-placeholder">●</span>
+                            <span th:if="${item.photo == null}" class="avatar-placeholder" th:text="${#strings.substring(item.fullName, 0, 1)}">J</span>
                         </div>
                         <div>
                             <div class="profile-name" th:text="${item.fullName}">John Doe</div>
-                            <span class="badge" th:text="${item.profileType}">STUDENT</span>
-                            <div class="dept" th:text="${item.department}">Engineering</div>
+                            <div class="badge-row">
+                                <span class="badge" th:text="${item.profileType}">STUDENT</span>
+                                <span class="active-dot">Active</span>
+                            </div>
                             <div class="detail-lines">
+                                <span th:text="'Department: ' + ${item.department}">Department: Engineering</span>
                                 <span th:text="'Email: ' + ${item.email}">Email: john@example.com</span>
-                                <span th:text="'Status: Active ' + ${item.profileType} + ' card'">Status: Active Card</span>
+                                <span th:text="'Access Level: ' + ${item.profileType}">Access Level: STUDENT</span>
                             </div>
                             <span class="reg" th:text="${item.registrationNumber}">08-9479</span>
                         </div>
@@ -521,7 +755,7 @@
                             <input th:id="'editPhoto' + ${item.id}" name="photoFile" type="file" accept="image/*">
                         </div>
 
-                        <div class="submit-row">
+                        <div class="form-actions">
                             <button type="submit">Save Changes</button>
                         </div>
                     </form>
@@ -530,5 +764,50 @@
         </div>
     </section>
 </main>
+
+<script>
+    const fullName = document.getElementById('fullName');
+    const department = document.getElementById('department');
+    const email = document.getElementById('email');
+    const typeInputs = document.querySelectorAll('input[name="profileType"]');
+    const previewName = document.getElementById('previewName');
+    const previewInitial = document.getElementById('previewInitial');
+    const previewType = document.getElementById('previewType');
+    const previewDept = document.getElementById('previewDept');
+    const previewEmail = document.getElementById('previewEmail');
+
+    function selectedType() {
+        const selected = Array.from(typeInputs).find(input => input.checked);
+        return selected ? selected.value : 'STUDENT';
+    }
+
+    function initials(value) {
+        return value
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map(part => part.charAt(0).toUpperCase())
+            .join('') || 'JD';
+    }
+
+    function updatePreview() {
+        const name = fullName.value || 'John Doe';
+        const dept = department.value || 'Engineering';
+        const mail = email.value || 'john@example.com';
+
+        previewName.textContent = name;
+        previewInitial.textContent = initials(name);
+        previewType.textContent = selectedType();
+        previewDept.textContent = 'Department: ' + dept;
+        previewEmail.textContent = 'Email: ' + mail;
+    }
+
+    [fullName, department, email, ...typeInputs].forEach(input => {
+        input.addEventListener('input', updatePreview);
+        input.addEventListener('change', updatePreview);
+    });
+
+    updatePreview();
+</script>
 </body>
 </html>
