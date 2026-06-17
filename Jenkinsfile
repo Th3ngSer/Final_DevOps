@@ -13,19 +13,33 @@ pipeline {
     stages {
         stage('Build & Test') {
             steps {
-                dir('scratch_app') {
-                    // Make mvnw executable (if needed) and run tests against the test profile
-                    sh 'chmod +x mvnw || true'
-                    sh 'mkdir -p src/main/resources/graphql-client'
-                    sh './mvnw clean test -Dspring.profiles.active=test'
-                }
+                sh '''
+                    if [ -f pom.xml ]; then
+                        project_dir="."
+                    elif [ -f scratch_app/pom.xml ]; then
+                        project_dir="scratch_app"
+                    else
+                        echo "No pom.xml found in repository root or scratch_app" >&2
+                        exit 1
+                    fi
+
+                    cd "$project_dir"
+                    chmod +x mvnw || true
+                    mkdir -p src/main/resources/graphql-client
+
+                    if [ -x ./mvnw ]; then
+                        ./mvnw clean test -Dspring.profiles.active=test
+                    else
+                        mvn clean test -Dspring.profiles.active=test
+                    fi
+                '''
             }
         }
 
         stage('Deploy via Ansible') {
             steps {
                 // Execute the Ansible playbook using the local system's ansible-playbook
-                sh 'ansible-playbook -i inventory.ini deploy.yml'
+                sh 'ansible-playbook -i inventory.ini deploy.yml -e app_branch="${BRANCH_NAME}"'
             }
         }
     }
