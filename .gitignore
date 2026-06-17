@@ -1,1 +1,3 @@
 host_backups/
+jenkins.war
+*.war

@@ -16,6 +16,7 @@ pipeline {
                 dir('scratch_app') {
                     // Make mvnw executable (if needed) and run tests against the test profile
                     sh 'chmod +x mvnw || true'
+                    sh 'mkdir -p src/main/resources/graphql-client'
                     sh './mvnw clean test -Dspring.profiles.active=test'
                 }
             }
