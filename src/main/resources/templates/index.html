@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Card System Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #0f0f10;
+            color: #f8fafc;
+            font-family: Arial, sans-serif;
+        }
+
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 28px 20px 56px;
+        }
+
+        h1 {
+            color: #d7dee9;
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0 0 36px;
+        }
+
+        .hero {
+            display: grid;
+            gap: 28px;
+            justify-items: center;
+            margin-bottom: 36px;
+        }
+
+        .id-card {
+            background: #2b2d3a;
+            border: 1px solid #85899a;
+            border-radius: 0 18px 18px 0;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+            display: grid;
+            grid-template-columns: 36px 1fr 132px;
+            height: 230px;
+            overflow: hidden;
+            position: relative;
+            width: 560px;
+        }
+
+        .id-strip {
+            align-items: center;
+            background: #a9c9ff;
+            color: #050505;
+            display: flex;
+            font-size: 12px;
+            font-weight: 800;
+            justify-content: center;
+            letter-spacing: 0.04em;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .id-main {
+            align-items: center;
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: 24px;
+            padding: 32px 22px;
+        }
+
+        .avatar {
+            align-items: center;
+            background: #404556;
+            border-radius: 50%;
+            display: flex;
+            height: 104px;
+            justify-content: center;
+            overflow: hidden;
+            width: 104px;
+        }
+
+        .avatar img {
+            height: 100%;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .avatar-placeholder {
+            color: #9097aa;
+            font-size: 52px;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        .badge {
+            background: #f6b83f;
+            border-radius: 3px;
+            color: #ffffff;
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            margin: 4px 0 10px;
+            padding: 3px 8px;
+        }
+
+        .dept {
+            color: #d7dbe7;
+            font-size: 14px;
+        }
+
+        .reg {
+            border: 1px solid #555b70;
+            border-radius: 10px;
+            color: #ffffff;
+            display: inline-block;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 28px;
+            padding: 6px 11px;
+        }
+
+        .id-codes {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 18px 16px 20px 0;
+        }
+
+        .qr {
+            background: #ffffff;
+            border-radius: 4px;
+            height: 72px;
+            padding: 4px;
+            width: 72px;
+        }
+
+        .barcode {
+            background: #ffffff;
+            max-height: 48px;
+            max-width: 140px;
+            padding: 4px;
+        }
+
+        .sample-qr {
+            color: #ffffff;
+            font-family: monospace;
+            font-size: 32px;
+            line-height: 0.7;
+            text-align: center;
+        }
+
+        .sample-barcode {
+            color: #ffffff;
+            font-family: monospace;
+            font-size: 30px;
+            letter-spacing: -6px;
+        }
+
+        .panel {
+            border-top: 1px solid #303030;
+            margin-top: 18px;
+            padding-top: 18px;
+            width: 100%;
+        }
+
+        .status {
+            color: #cbd5e1;
+            text-align: center;
+        }
+
+        .status strong {
+            color: #ffffff;
+            display: block;
+            font-family: monospace;
+            margin-top: 8px;
+        }
+
+        .form {
+            border-top: 1px solid #303030;
+            display: grid;
+            gap: 16px 22px;
+            grid-template-columns: repeat(2, minmax(240px, 1fr));
+            margin-top: 22px;
+            padding-top: 20px;
+        }
+
+        label {
+            color: #f8fafc;
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            background: #171717;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            padding: 12px 14px;
+            width: 100%;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #9fbfff;
+        }
+
+        .segmented {
+            background: #171717;
+            border-radius: 999px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            overflow: hidden;
+        }
+
+        .segmented label {
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .segmented input {
+            display: none;
+        }
+
+        .segmented span {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 13px 14px;
+            text-align: center;
+        }
+
+        .segmented input:checked + span {
+            background: #24327c;
+            box-shadow: inset 0 0 0 1px #ffffff;
+        }
+
+        .submit-row {
+            grid-column: 1 / -1;
+            text-align: right;
+        }
+
+        button {
+            background: #24327c;
+            border: 1px solid #9fbfff;
+            border-radius: 999px;
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 800;
+            padding: 12px 26px;
+        }
+
+        button.danger {
+            background: #3a1212;
+            border-color: #ef4444;
+        }
+
+        .error {
+            background: #3b1111;
+            border: 1px solid #ef4444;
+            border-radius: 12px;
+            color: #fecaca;
+            margin-bottom: 18px;
+            padding: 12px;
+        }
+
+        .cards-grid {
+            display: grid;
+            gap: 26px;
+            grid-template-columns: repeat(auto-fit, minmax(560px, 1fr));
+            justify-items: center;
+            margin-top: 28px;
+        }
+
+        .saved-card {
+            width: 560px;
+        }
+
+        .saved-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        .empty {
+            border: 1px dashed #414141;
+            border-radius: 16px;
+            color: #94a3b8;
+            margin-top: 26px;
+            padding: 28px;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            .id-card,
+            .saved-card {
+                width: 100%;
+            }
+
+            .id-card {
+                grid-template-columns: 32px 1fr;
+                height: auto;
+            }
+
+            .id-codes {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                padding: 0 18px 18px 50px;
+            }
+
+            .id-main,
+            .form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="page">
+    <h1>ID Card System Generator</h1>
+
+    <section class="hero">
+        <article class="id-card">
+            <div class="id-strip">IDENTITY ACCESS</div>
+            <div class="id-main">
+                <div class="avatar">
+                    <span class="avatar-placeholder">●</span>
+                </div>
+                <div>
+                    <div class="profile-name">John Doe</div>
+                    <span class="badge">STUDENT</span>
+                    <div class="dept">Engineering</div>
+                    <span class="reg">08-9479</span>
+                </div>
+            </div>
+            <div class="id-codes">
+                <div class="sample-qr">▟▙<br>▜▛</div>
+                <div class="sample-barcode">||||||||||||</div>
+            </div>
+        </article>
+
+        <div class="panel">
+            <div class="status">
+                Status
+                <strong>Live Preview</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="error" th:if="${error}" th:text="${error}"></div>
+
+        <form class="form" th:action="@{/profiles}" method="post" enctype="multipart/form-data">
+            <div>
+                <label for="fullName">Full Name</label>
+                <input id="fullName" name="fullName" type="text" placeholder="John Doe" required>
+            </div>
+
+            <div>
+                <label>Profile Type</label>
+                <div class="segmented">
+                    <label th:each="type, stat : ${profileTypes}">
+                        <input type="radio" name="profileType" th:value="${type}" th:checked="${stat.index == 0}" required>
+                        <span th:text="${type}"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <label for="department">Department</label>
+                <input id="department" name="department" type="text" placeholder="Engineering" required>
+            </div>
+
+            <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="john@example.com" required>
+            </div>
+
+            <div>
+                <label for="photo">Photo</label>
+                <input id="photo" name="photoFile" type="file" accept="image/*">
+            </div>
+
+            <div class="submit-row">
+                <button type="submit">Create Profile</button>
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <div class="empty" th:if="${#lists.isEmpty(profiles)}">
+            No generated cards yet. Create a profile above.
+        </div>
+
+        <div class="cards-grid" th:if="${!#lists.isEmpty(profiles)}">
+            <div class="saved-card" th:each="item : ${profiles}">
+                <article class="id-card">
+                    <div class="id-strip">IDENTITY ACCESS</div>
+                    <div class="id-main">
+                        <div class="avatar">
+                            <img th:if="${item.photo != null}" th:src="@{/profiles/{id}/photo(id=${item.id})}" alt="Profile photo">
+                            <span th:if="${item.photo == null}" class="avatar-placeholder">●</span>
+                        </div>
+                        <div>
+                            <div class="profile-name" th:text="${item.fullName}">John Doe</div>
+                            <span class="badge" th:text="${item.profileType}">STUDENT</span>
+                            <div class="dept" th:text="${item.department}">Engineering</div>
+                            <span class="reg" th:text="${item.registrationNumber}">08-9479</span>
+                        </div>
+                    </div>
+                    <div class="id-codes">
+                        <img class="qr" th:src="@{/profiles/{id}/qr(id=${item.id})}" alt="QR code">
+                        <img class="barcode" th:src="@{/profiles/{id}/barcode(id=${item.id})}" alt="Barcode">
+                    </div>
+                </article>
+
+                <div class="saved-actions">
+                    <form th:action="@{/profiles/{id}/delete(id=${item.id})}" method="post">
+                        <button class="danger" type="submit">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>
