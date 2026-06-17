@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web-server:
+    build: ./web
+    container_name: id-card-web-app
+    restart: always
+    ports:
+      - "8443:8443"  # Proxying NGINX internally
+      - "2222:2222"    # SSH Access
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/B-Pang_Lythong-db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Hello@123
+      - SERVER_PORT=8080
+    depends_on:
+      - mysql-db
+    networks:
+      - id-card-network
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: "B-Pang_Lythong-db"   # <--- EXACTLY MATCHES ASSIGNMENT FORMULA
+      MYSQL_ROOT_PASSWORD: "Hello@123"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - id-card-network
+
+networks:
+  id-card-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

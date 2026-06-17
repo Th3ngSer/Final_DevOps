@@ -1,0 +1,62 @@
+---
+- name: CI/CD Automation Deployment Playbook
+  hosts: webservers
+  gather_facts: no
+  vars:
+    repo_path: "/opt/app"
+    project_path: "/opt/app/scratch_app"  # Points to your Spring Boot project inside the container
+    backup_dir: "/opt/backups"
+
+  tasks:
+    - name: 1. Discard any local Git changes to ensure a clean pull
+      ansible.builtin.shell:
+        cmd: "git reset --hard HEAD && git clean -fd"
+        chdir: "{{ repo_path }}"
+      ignore_errors: yes # Avoid crashing if git isn't initialized inside the folder yet
+
+    - name: 2. Pull latest codebase from GitHub public repository
+      ansible.builtin.git:
+        repo: 'https://github.com/Th3ngSer/Final_DevOps.git' # Replace with your real public repository URL
+        dest: "{{ repo_path }}"
+        version: master
+        force: yes
+
+    - name: Create missing graphql-client directory
+      ansible.builtin.file:
+        path: "{{ project_path }}/src/main/resources/graphql-client"
+        state: directory
+        mode: '0755'
+
+    - name: 3. Build and Run Tests using Maven against the SQLite Test Profile
+      ansible.builtin.shell:
+        cmd: "./mvnw clean test -Dspring.profiles.active=test"
+        chdir: "{{ project_path }}"
+      register: test_output
+
+    - name: Show test results console log
+      ansible.builtin.debug:
+        var: test_output.stdout_lines
+
+    - name: 4. Build Production Package
+      ansible.builtin.shell:
+        cmd: "./mvnw clean package -DskipTests"
+        chdir: "{{ project_path }}"
+
+    - name: 5. Stop running Java application
+      ansible.builtin.shell:
+        cmd: "pkill -f 'java -jar target/' || true"
+
+    - name: 6. Start new Java application in background
+      ansible.builtin.shell:
+        cmd: "nohup java -jar target/*.war > /var/log/spring-boot.log 2>&1 &"
+        chdir: "{{ project_path }}"
+
+    - name: 7. Ensure backup directory exists
+      ansible.builtin.file:
+        path: "{{ backup_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: 8. Backup the MySQL Production Database
+      ansible.builtin.shell:
+        cmd: "mysqldump -h mysql-db -u root -pHello@123 B-Pang_Lythong-db > {{ backup_dir }}/backup_$(date +%Y%m%d%H%M%S).sql"
