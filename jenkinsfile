@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    triggers {
+        // Poll SCM every 5 minutes to check for new git commits
+        pollSCM('*/5 * * * *')
+    }
+
+    environment {
+        // Define notification emails
+        SRE_EMAIL = 'srengty@gmail.com'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Clones your specific assignment branch
+                git branch: 'Ex1_Final_DevOps', url: 'https://github.com/Th3ngSer/Final_DevOps.git'
+            }
+        }
+
+        stage('Build & Test') {
+            steps {
+                dir('scratch_app') {
+                    // Runs tests inside the container environment against SQLite
+                    sh './mvnw clean test -Dspring.profiles.active=test'
+                }
+            }
+        }
+
+        stage('Deploy via Ansible') {
+            steps {
+                // Executes your Ansible Playbook using the inventory file
+                ansiblePlaybook(
+                    playbook: 'deploy.yml',
+                    inventory: 'inventory.ini'
+                )
+            }
+        }
+    }
+
+    post {
+        failure {
+            script {
+                // Sends an explicit notification to the SRE and the specific developer who broke the build
+                emailext (
+                    subject: "BUILD FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                    body: """Join check the logs at: ${env.BUILD_URL}
+                             
+                             Error detected during the build/test execution phase.""",
+                    to: "${SRE_EMAIL}",
+                    cc: "cc:todo", // Automatically includes the developer who made the failing commit
+                    recipientProviders: [culprits(), developers()]
+                )
+            }
+        }
+    }
+}

@@ -116,6 +116,17 @@
             font-size: 14px;
         }
 
+        .detail-lines {
+            color: #b8c0d0;
+            font-size: 11px;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        .detail-lines span {
+            display: block;
+        }
+
         .reg {
             border: 1px solid #555b70;
             border-radius: 10px;
@@ -262,6 +273,20 @@
             padding: 12px 26px;
         }
 
+        .button-link {
+            align-items: center;
+            background: #16213f;
+            border: 1px solid #9fbfff;
+            border-radius: 999px;
+            color: #ffffff;
+            display: inline-flex;
+            font-size: 13px;
+            font-weight: 800;
+            justify-content: center;
+            padding: 11px 18px;
+            text-decoration: none;
+        }
+
         button.danger {
             background: #3a1212;
             border-color: #ef4444;
@@ -290,8 +315,30 @@
 
         .saved-actions {
             display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
             justify-content: flex-end;
             margin-top: 12px;
+        }
+
+        details.edit-panel {
+            border: 1px solid #303030;
+            border-radius: 16px;
+            margin-top: 14px;
+            padding: 12px;
+        }
+
+        details.edit-panel summary {
+            color: #dbeafe;
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        .edit-form {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            margin-top: 14px;
         }
 
         .empty {
@@ -342,6 +389,10 @@
                     <div class="profile-name">John Doe</div>
                     <span class="badge">STUDENT</span>
                     <div class="dept">Engineering</div>
+                    <div class="detail-lines">
+                        <span>Email: john@example.com</span>
+                        <span>Status: Active Card</span>
+                    </div>
                     <span class="reg">08-9479</span>
                 </div>
             </div>
@@ -417,6 +468,10 @@
                             <div class="profile-name" th:text="${item.fullName}">John Doe</div>
                             <span class="badge" th:text="${item.profileType}">STUDENT</span>
                             <div class="dept" th:text="${item.department}">Engineering</div>
+                            <div class="detail-lines">
+                                <span th:text="'Email: ' + ${item.email}">Email: john@example.com</span>
+                                <span th:text="'Status: Active ' + ${item.profileType} + ' card'">Status: Active Card</span>
+                            </div>
                             <span class="reg" th:text="${item.registrationNumber}">08-9479</span>
                         </div>
                     </div>
@@ -427,10 +482,50 @@
                 </article>
 
                 <div class="saved-actions">
+                    <a class="button-link" th:href="@{/profiles/{id}/pdf(id=${item.id})}">Download PDF</a>
                     <form th:action="@{/profiles/{id}/delete(id=${item.id})}" method="post">
                         <button class="danger" type="submit">Delete</button>
                     </form>
                 </div>
+
+                <details class="edit-panel">
+                    <summary>Edit Card Details</summary>
+                    <form class="edit-form" th:action="@{/profiles/{id}/update(id=${item.id})}" method="post" enctype="multipart/form-data">
+                        <div>
+                            <label th:for="'editFullName' + ${item.id}">Full Name</label>
+                            <input th:id="'editFullName' + ${item.id}" name="fullName" type="text" th:value="${item.fullName}" required>
+                        </div>
+
+                        <div>
+                            <label th:for="'editEmail' + ${item.id}">Email</label>
+                            <input th:id="'editEmail' + ${item.id}" name="email" type="email" th:value="${item.email}" required>
+                        </div>
+
+                        <div>
+                            <label th:for="'editDepartment' + ${item.id}">Department</label>
+                            <input th:id="'editDepartment' + ${item.id}" name="department" type="text" th:value="${item.department}" required>
+                        </div>
+
+                        <div>
+                            <label th:for="'editProfileType' + ${item.id}">Profile Type</label>
+                            <select th:id="'editProfileType' + ${item.id}" name="profileType" required>
+                                <option th:each="type : ${profileTypes}"
+                                        th:value="${type}"
+                                        th:text="${type}"
+                                        th:selected="${type == item.profileType}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label th:for="'editPhoto' + ${item.id}">Replace Photo</label>
+                            <input th:id="'editPhoto' + ${item.id}" name="photoFile" type="file" accept="image/*">
+                        </div>
+
+                        <div class="submit-row">
+                            <button type="submit">Save Changes</button>
+                        </div>
+                    </form>
+                </details>
             </div>
         </div>
     </section>

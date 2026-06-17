@@ -1,6 +1,7 @@
 package com.example.demo1.services;
 
 import com.example.demo1.models.Profile;
+import com.example.demo1.models.ProfileType;
 import com.example.demo1.repositories.ProfileRepository;
 import com.example.demo1.utils.BarcodeGenerator;
 import com.example.demo1.utils.QRCodeGenerator;
@@ -39,6 +40,28 @@ public class ProfileService {
         // QR scanners will show all card details, while the barcode keeps the short ID.
         profile.setQrCode(QRCodeGenerator.generateQRCodeImage(buildQrPayload(profile), 240, 240));
         profile.setBarcode(BarcodeGenerator.generateCode128BarcodeImage(regNumber, 300, 100));
+
+        return profileRepository.save(profile);
+    }
+
+    public Profile updateProfile(Long id, String fullName, String email, String department,
+                                 ProfileType profileType, MultipartFile photo) throws Exception {
+        Profile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+
+        profile.setFullName(fullName);
+        profile.setEmail(email);
+        profile.setDepartment(department);
+        profile.setProfileType(profileType);
+
+        if (photo != null && !photo.isEmpty()) {
+            profile.setPhoto(photo.getBytes());
+        }
+
+        profile.setQrCode(QRCodeGenerator.generateQRCodeImage(buildQrPayload(profile), 240, 240));
+        if (profile.getBarcode() == null) {
+            profile.setBarcode(BarcodeGenerator.generateCode128BarcodeImage(profile.getRegistrationNumber(), 300, 100));
+        }
 
         return profileRepository.save(profile);
     }
