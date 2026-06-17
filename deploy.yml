@@ -3,8 +3,9 @@
   hosts: webservers
   gather_facts: no
   vars:
+    app_repo_url: "https://github.com/Th3ngSer/Final_DevOps.git"
+    app_branch: "Ex1_Final_DevOps"
     repo_path: "/opt/app"
-    project_path: "/opt/app/scratch_app"  # Points to your Spring Boot project inside the container
     backup_dir: "/opt/backups"
 
   tasks:
@@ -16,10 +17,29 @@
 
     - name: 2. Pull latest codebase from GitHub public repository
       ansible.builtin.git:
-        repo: 'https://github.com/Th3ngSer/Final_DevOps.git' # Replace with your real public repository URL
+        repo: "{{ app_repo_url }}"
         dest: "{{ repo_path }}"
-        version: master
+        version: "{{ app_branch }}"
         force: yes
+
+    - name: Check for Maven project at repository root
+      ansible.builtin.stat:
+        path: "{{ repo_path }}/pom.xml"
+      register: root_pom
+
+    - name: Check for Maven project inside scratch_app
+      ansible.builtin.stat:
+        path: "{{ repo_path }}/scratch_app/pom.xml"
+      register: scratch_app_pom
+
+    - name: Select Spring Boot project path
+      ansible.builtin.set_fact:
+        project_path: "{{ repo_path if root_pom.stat.exists else repo_path + '/scratch_app' }}"
+
+    - name: Fail if no Maven project exists
+      ansible.builtin.fail:
+        msg: "No pom.xml found at {{ repo_path }} or {{ repo_path }}/scratch_app"
+      when: not root_pom.stat.exists and not scratch_app_pom.stat.exists
 
     - name: Create missing graphql-client directory
       ansible.builtin.file:
@@ -29,7 +49,12 @@
 
     - name: 3. Build and Run Tests using Maven against the SQLite Test Profile
       ansible.builtin.shell:
-        cmd: "./mvnw clean test -Dspring.profiles.active=test"
+        cmd: |
+          if [ -x ./mvnw ]; then
+            ./mvnw clean test -Dspring.profiles.active=test
+          else
+            mvn clean test -Dspring.profiles.active=test
+          fi
         chdir: "{{ project_path }}"
       register: test_output
 
@@ -39,7 +64,12 @@
 
     - name: 4. Build Production Package
       ansible.builtin.shell:
-        cmd: "./mvnw clean package -DskipTests"
+        cmd: |
+          if [ -x ./mvnw ]; then
+            ./mvnw clean package -DskipTests
+          else
+            mvn clean package -DskipTests
+          fi
         chdir: "{{ project_path }}"
 
     - name: 5. Stop running Java application
