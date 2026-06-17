@@ -44,7 +44,7 @@
 
     - name: 5. Stop running Java application
       ansible.builtin.shell:
-        cmd: "pkill -f 'java -jar target/' || true"
+        cmd: "pkill -f '[j]ava -jar target/' || true"
 
     - name: 6. Start new Java application in background
       ansible.builtin.shell:
